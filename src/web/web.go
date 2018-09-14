@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+	utf8string "golang.org/x/exp/utf8string"
 )
 
 type Server struct {
@@ -74,7 +75,10 @@ func (s *Server) searchHandler(w http.ResponseWriter, r *http.Request) {
 		log.Debug("Searching %s took %s\n", query, dur.String())
 	}
 	for _, item := range data {
-		io.WriteString(w, item+"\n")
+		s := utf8string.NewString(item)
+		if s.IsASCII() {
+		    io.WriteString(w, s.String()+"\n")
+		}
 	}
 }
 
